@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Flight {
+  id        Int      @id @default(autoincrement())
+  aircraft  String
+  from      String
+  to        String
+  datetime  DateTime
+  price     Int
+  status    String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  // average benchmark price for transparency
+  avgPrice Float?
+
+  // relation: one flight can have many inquiries
+  inquiries Inquiry[]
+}
+
+model Inquiry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  notes     String?
+  concierge Boolean  @default(false)
+  pets      Json?
+  flightId  Int
+  message   String
+  createdAt DateTime @default(now())
+
+  // relation: each inquiry belongs to one flight
+  Flight Flight @relation(fields: [flightId], references: [id])
+}
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  phone     String
+  createdAt DateTime @default(now())
+}
+
+model Booking {
+  id               Int      @id @default(autoincrement())
+  name             String
+  email            String
+  phone            String
+  budget           Float?
+  concierge        Boolean?
+  conciergePercent Float?
+  pets             Json?
+  meals            String?
+  notes            String?
+  message          String?
+  createdAt        DateTime @default(now())
+}
